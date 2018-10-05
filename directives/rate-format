@@ -1,0 +1,38 @@
+// allows only floating numbers with 2 decimals -> 12,34
+import { Directive, HostListener } from '@angular/core';
+
+@Directive({
+    selector: '[appRateFormat]'
+})
+export class RateFormatDirective {
+
+    constructor() { }
+
+    @HostListener('keydown', ['$event'])
+    rateFormat(e) {
+        // Allow: backspace, delete, tab, escape and enter + dot
+        if ([46, 8, 9, 27, 13, 190].includes(e.keyCode) ||
+            // Allow: Ctrl+A|X|C|V, Command+A|X|C|V
+            ([65, 88, 67, 86].includes(e.keyCode) && (e.ctrlKey === true || e.metaKey === true)) ||
+            // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+            // let it happen, don't do anything
+            return;
+        }
+
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+            (e.keyCode < 96 || e.keyCode > 105) && e.keycode !== 190) {
+            e.preventDefault();
+        }
+    }
+
+    @HostListener('keyup', ['$event'])
+    formatRate(e) {
+        // Ensure that the format is xx.xx -> /(\d{0,2})[^\.]*((?\.\d{0,2})?)/g
+        const val = e.target.value;
+        const match = (/(\d{0,2})[^.]*((?:\.\d{0,2})?)/g).exec(val.replace(/[^\d.]/g, ''));
+
+        e.target.value = match[1] + match[2];
+    }
+}

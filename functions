@@ -1,0 +1,664 @@
+// TODO: add description & params to each function
+
+export const replaceNLWithBreakspace = text => {
+  return text.replace(/\n\r?/g, '<br />');
+};
+
+export const replaceBreakspaceWithNL = text => {
+  return text.replace(/<br \/>?/gm, '\n');
+};
+
+export const containsSpecialCharacters = str => {
+  return /[~`!#$%^&*+=\-\[\]\\';,/{}|":<>?]/g.test(str);
+};
+
+export const isPhoneNumber = str => {
+  return /(\+\d)?\(?(\d{4})\)?[\s-]?\d{3}[\s-]?\d{3}/g.test(str);
+};
+
+export const containsOnlyWhitespaces = str => {
+  const regexStr = `\\s{${str.length}}`;
+  const regex = new RegExp(regexStr, 'g');
+  return regex.test(str);
+};
+
+export const capitalizeFirstLetter = string => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const getStringBeforeChar = (str, char) => {
+  return str.substring(0, str.indexOf(char));
+};
+
+export const getStringAfterChar = (str, char) => {
+  return str.split(char).pop();
+};
+
+export const getCamelCaseText = str => {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
+    return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
+  }).replace(/\s+/g, '');
+};
+
+export const generateUniqueId = () => {
+  return `${Math.random().toString(36).substr(2, 10)}`;
+};
+
+export const createHiddenIframe = src => {
+  const iFrame = document.createElement('iframe');
+  iFrame.style.display = 'none';
+  iFrame.src = src;
+  iFrame.onload = () => {
+    document.body.removeChild(iFrame);
+  };
+  document.body.appendChild(iFrame);
+};
+
+export const undef = x => typeof x === 'undefined';
+
+export const getAsteriskValue = value => {
+  if (!value) {
+    return '';
+  }
+
+  return value.toString().replace(/./g, '*');
+};
+
+export const toUTCString = (currentDate: Date): string => {
+  return [
+    currentDate.getFullYear(),
+    ('0' + (currentDate.getMonth() + 1)).slice(-2),
+    ('0' + currentDate.getDate()).slice(-2)
+  ].join('-');
+};
+
+export const generateIdUnsafe = () => `temp_${Math.random().toString(36).slice(2)}`;
+export const getMonthString = (date) => {
+  const monthIndex = date.getMonth();
+  const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  return monthNames[monthIndex];
+};
+
+export const getShortDate = (d) => {
+  const date = new Date(d);
+  const day = date.getDate();
+  const monthString = getMonthString(date);
+
+  return `${day} ${monthString}`;
+};
+
+export const getCommaSeparatedValue = (val, decimals = false) => {
+  const value = val;
+
+  if (val) {
+    val = val.toString()
+      .split('.')[0]
+      .replace(/^0+/g, '')
+      .replace(/\D+/g, '')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  if (decimals) {
+    const splt = value.toString().split('.');
+
+    return `${val}.${splt[1]}`;
+  }
+
+  if (val === 0) {
+    return null;
+  }
+
+  if (value < 0) {
+    return `-${val}`;
+  }
+
+  return val;
+};
+
+export const getLastPunctuationIndex = text => {
+  const punctuations = ['.', '?', '!', '...'];
+
+  const punctuationPosition = punctuations.map(punctuation => text.lastIndexOf(punctuation));
+  const max = Math.max(...punctuationPosition);
+  const fallback = text.lastIndexOf(' ') > -1 ? text.lastIndexOf(' ') : text.length;
+
+  return max > -1 ? max : fallback;
+};
+
+export const ieMenuFixOpen = (open: boolean) => {
+  if (open) {
+    document.querySelector('body').className += ' ie-menu-fix';
+  } else {
+    const className = document.querySelector('body').className;
+    document.querySelector('body').className = className.replace(' ie-menu-fix', '');
+  }
+};
+
+export const scrollTo = (element, to, duration) => {
+  if (duration <= 0) {
+    element.scrollTop = to;
+
+    return;
+  }
+
+  const difference = to - element.scrollTop;
+  const perTick = difference / duration * 10;
+
+  setTimeout(() => {
+    element.scrollTop = element.scrollTop + perTick;
+    if (element.scrollTop === to) {
+      return;
+    }
+    scrollTo(element, to, duration - 10);
+  }, 10);
+};
+
+export const findElementTop = obj => {
+  let top = 0;
+
+  if (obj.offsetParent) {
+    do {
+      top += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+
+    return top;
+  }
+
+  return top;
+};
+
+export const scrollToTop = (duration = 0) => {
+  scrollTo(document.documentElement, 0, duration); // For Chrome, Firefox, IE and Opera
+  scrollTo(document.body, 0, duration); // For Safari
+};
+
+export const deviceSupportsTouch = () => 'ontouchstart' in document.documentElement;
+
+export const parseFormattedNumberToInt = (number: string) => {
+  const parsed = parseInt((number || '').toString().split('.')[0].replace(/\D+/g, ''), 10);
+
+  if (isNaN(parsed)) {
+    return null;
+  }
+
+  return parsed;
+};
+
+export const replaceStringResourceParameters = (str, ...parameters) => {
+  parameters.forEach((v, i) => {
+    str = (str || '').replace(`{${i}}`, v);
+  });
+
+  return str;
+};
+
+export const optionsWithDefaults = ({
+  centerX,
+  centerY,
+  startDegrees,
+  endDegrees,
+  thickness,
+  innerRadius,
+  outerRadius,
+}) => {
+  const o = {
+    cx: centerX || 0,
+    cy: centerY || 0,
+    startRadians: (startDegrees || 0) * Math.PI / 180,
+    closeRadians: (endDegrees || 0) * Math.PI / 180,
+  };
+
+  const t = thickness !== undefined ? thickness : 100;
+
+  let r1, r2;
+
+  if (innerRadius !== undefined) {
+    r1 = innerRadius;
+  } else if (outerRadius !== undefined) {
+    r1 = outerRadius - t;
+  } else {
+    r1 = 200 - t;
+  }
+
+  if (outerRadius !== undefined) {
+    r2 = outerRadius;
+  } else {
+    r2 = r1 + t;
+  }
+
+  if (r1 < 0) {
+    r1 = 0;
+  }
+
+  if (r2 < 0) {
+    r2 = 0;
+  }
+
+  return {
+    ...o,
+    r1,
+    r2,
+  };
+};
+
+export const annularSector = (options) => {
+  const opts = optionsWithDefaults(options);
+  const p = [
+    [opts.cx + opts.r2 * Math.cos(opts.startRadians),
+      opts.cy + opts.r2 * Math.sin(opts.startRadians)],
+    [opts.cx + opts.r2 * Math.cos(opts.closeRadians),
+      opts.cy + opts.r2 * Math.sin(opts.closeRadians)],
+    [opts.cx + opts.r1 * Math.cos(opts.closeRadians),
+      opts.cy + opts.r1 * Math.sin(opts.closeRadians)],
+    [opts.cx + opts.r1 * Math.cos(opts.startRadians),
+      opts.cy + opts.r1 * Math.sin(opts.startRadians)],
+  ];
+
+  const angleDiff = opts.closeRadians - opts.startRadians;
+  const largeArc = (angleDiff % (Math.PI * 2)) > Math.PI ? 1 : 0;
+
+  const cmds = [
+    'M' + p[0].join(),
+    'A' + [opts.r2, opts.r2, 0, largeArc, 1, p[1]].join(),
+    'L' + p[2].join(),
+    'A' + [opts.r1, opts.r1, 0, largeArc, 0, p[3]].join(),
+    'z'
+  ];
+
+  return cmds.join(' ');
+};
+/**
+ * Adds delay/debounceTime to a function and it's used before the function
+ * like this -> @debounce()
+ * @param delay: number
+ */
+export function debounce (delay: number = 300): MethodDecorator {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    let timeout = null;
+
+    const original = descriptor.value;
+
+    descriptor.value = function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => original.apply(this, args), delay);
+    };
+
+    return descriptor;
+  };
+}
+
+export const removeTrailingLineBreaks = (text) => {
+  return text.replace(/(?:<br\s*\/?\s*>)+\s*$/, '');
+};
+
+export const removeLastSentence = (text) => {
+  const lastSeparator = Math.max(
+    text.lastIndexOf('.'),
+    text.lastIndexOf('!'),
+    text.lastIndexOf('?')
+  );
+
+  const revtext = text.split('').reverse().join('');
+  const sep = revtext.search(/[A-Z][\s | (;psbn&) | (>\s*\/?\s*rb<)]+(\")?[\.\!\?]/);
+  const lastTagPos = revtext.search(/\/\</);
+  const lastTag = lastTagPos > -1 ? text.length - revtext.search(/\/\</) - 2 : text.length;
+  const lastPtr = lastTag > lastSeparator ? lastTag : text.length;
+
+  if (sep > -1) {
+    const fText = revtext.substring(sep + 1, revtext.length).trim().split('').reverse().join('');
+    const lText = text.substring(lastPtr, text.length).replace(/['"]/g, '').trim();
+
+    return fText + lText;
+  }
+
+  const lastBr = text.lastIndexOf('<br>');
+
+  if (lastBr > -1) {
+    return text.substring(0, lastBr);
+  }
+
+  return '';
+};
+
+export const removeLastWord = (text) => {
+  const lastSeparator = Math.max(
+    text.lastIndexOf(' '),
+    text.lastIndexOf('<br>')
+  );
+
+  if (lastSeparator > -1) {
+    return text.substring(0, lastSeparator);
+  }
+
+  return '';
+};
+
+export const removeNode = (node: Node) => {
+  if (node.parentNode) {
+    node.parentNode.removeChild(node);
+  }
+};
+
+export function sliceContentToFit(
+  { classes = <any>[], styles = <any>{}, lineHeight },
+  postBody,
+  readMoreExpand,
+  POST_MAX_TEXT_LINES,
+  previousPostBody = null,
+  removeWords = false
+) {
+  const container = document.createElement('div');
+
+  Object.keys(styles).forEach(k => {
+    container.style[k] = styles[k];
+  });
+
+  container.style.visibility = 'hidden';
+  container.setAttribute('class', classes.join(' '));
+  container.innerHTML = postBody;
+  document.body.appendChild(container);
+
+  const containerClientRect = container.getBoundingClientRect();
+  const numberOfLines = Math.ceil(containerClientRect.height / lineHeight);
+  const innerHTML = container.innerHTML;
+
+  if (previousPostBody && previousPostBody === innerHTML) {
+    removeNode(container);
+
+    return innerHTML;
+  }
+
+  const seeMoreLink = container.querySelector('.js-see-more');
+  const readMoreLink = container.querySelector('.js-read-more');
+
+  if (seeMoreLink) {
+    removeNode(seeMoreLink);
+  }
+
+  if (readMoreLink) {
+    removeNode(readMoreLink);
+  }
+
+  let innerHTMLWithoutSeeAndReadMore = container.innerHTML.trim();
+
+  if (
+    container.hasChildNodes() &&
+    container.childNodes.length === 1 &&
+    !['#text', 'A', 'BR'].includes(container.childNodes[0]['nodeName'])
+  ) {
+    innerHTMLWithoutSeeAndReadMore = container.childNodes[0]['innerHTML'].trim();
+  }
+
+  removeNode(container);
+
+  if (numberOfLines > POST_MAX_TEXT_LINES) {
+    const anchorString = `<a class="js-see-more read-more tenant-primary-txt-color">${readMoreExpand}</a>`;
+
+    if (!removeWords) {
+      const textWithoutLastSentence = removeTrailingLineBreaks(
+        removeLastSentence(innerHTMLWithoutSeeAndReadMore)
+      );
+
+      if (textWithoutLastSentence) {
+        const textWithAnchor = `${textWithoutLastSentence} ${anchorString}`;
+        return sliceContentToFit(
+          { classes, styles, lineHeight },
+          textWithAnchor,
+          readMoreExpand,
+          POST_MAX_TEXT_LINES,
+          innerHTML
+        );
+      }
+    }
+
+    const textWithoutLastWord = removeTrailingLineBreaks(
+      removeLastWord(innerHTMLWithoutSeeAndReadMore)
+    );
+
+    if (textWithoutLastWord) {
+      const textWithAnchor = `${textWithoutLastWord} ${anchorString}`;
+      return sliceContentToFit(
+        { classes, styles, lineHeight },
+        textWithAnchor,
+        readMoreExpand,
+        POST_MAX_TEXT_LINES,
+        innerHTML,
+        true
+      );
+    }
+  }
+
+  return innerHTML;
+}
+
+export const postHasReadMoreLinkInContent = (postEntity) => {
+  return !postEntity.ActionName || !postEntity.ReadMoreLink;
+};
+
+export const sliceText = (
+  postEntity,
+  fontSize,
+  lineHeight,
+  containerWidth,
+  readMoreExpand,
+  readMoreLink,
+  POST_MAX_TEXT_LINES
+) => {
+  if (!postEntity || !postEntity.Body) {
+    return '';
+  }
+
+  const postBody = postEntity.Body.replace(/<[^\/>][^>]*><\/[^>]+>/, '');
+  const anchor = `<a href="${postEntity.ReadMoreLink}"
+        class="js-read-more read-more tenant-primary-txt-color">${readMoreLink}</a>`;
+  const postBodyWithAnchor = `${postBody} ${anchor}`;
+
+  try {
+    return sliceContentToFit(
+      {
+        styles: {
+          fontSize: `${fontSize}px`,
+          lineHeight: `${lineHeight}px`,
+          width: `${containerWidth}px`,
+          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+        },
+        lineHeight,
+      },
+      postHasReadMoreLinkInContent(postEntity) && postEntity.ReadMoreLink
+        ? postBodyWithAnchor : postBody,
+      readMoreExpand,
+      POST_MAX_TEXT_LINES
+    );
+  } catch (e) {
+    return postBody;
+  }
+};
+
+export const transformElement = (element, transform, { x = '0px', y = '0px' } = {}) => {
+  Object.assign(element.style, {
+    mozTransform: transform,
+    mozTransformOrigin: `${x} ${y}`,
+    oTransform: transform,
+    oTransformOrigin: `${x} ${y}`,
+    webkitTransform: transform,
+    webkitTransformOrigin: `${x} ${y}`,
+    transform: transform,
+    transformOrigin: `${x} ${y}`,
+  });
+};
+
+export const deleteAllCookies = () => {
+  const cookies = document.cookie.split(';');
+
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf('=');
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+};
+
+export const shuffleString = (str) => (
+  str.split('').sort(() => 0.5 - Math.random()).join('')
+);
+
+export const groupBy = (xs, key) => (
+  xs.reduce((rv, x) => {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {})
+);
+
+export const humanFileSize = (bytes, si) => {
+  const thresh = si ? 1000 : 1024;
+
+  if (Math.abs(bytes) < thresh) {
+    return bytes + ' B';
+  }
+
+  const units = si
+    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
+  let u = -1;
+
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+
+  return bytes.toFixed(1) + ' ' + units[u];
+};
+
+export const compare = (a, b, isAsc) => {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+};
+
+export const isIOSDevice = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
+};
+
+export const isIE = () => {
+  return navigator.userAgent.match('MSIE 10.0;') ||
+    navigator.userAgent.indexOf('MSIE') !== -1 ||
+    navigator.appVersion.indexOf('Trident/') > 0;
+};
+
+export const isFirefox = () => {
+  return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+};
+
+export const isSafari = () => {
+  return navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+    navigator.userAgent && navigator.userAgent.indexOf('CriOS') === -1 &&
+    navigator.userAgent.indexOf('FxiOS') === -1;
+};
+
+export const validFilterObject = obj => {
+  const results = [];
+
+  if (obj.hasOwnProperty('Components') && Array.isArray(obj.Components)) {
+    obj.Components.forEach(component => {
+      results.push(validFilterObject(component));
+    });
+  } else if (obj.Values && Array.isArray(obj.Values)) {
+    if (obj.Values && obj.Values.length > 0 && obj.Values[0] !== '') {
+      return true;
+    }
+
+    return false;
+  }
+
+  return !results.some(res => res === false);
+};
+
+export const getFilteredFilterObject = obj => {
+  let values;
+
+  if (obj.hasOwnProperty('Components') && Array.isArray(obj.Components)) {
+    values = obj.Components.filter(com => {
+      if (com.hasOwnProperty('Components') && !!com.Components) {
+        const val = getFilteredFilterObject(com);
+
+        return val && val.length > 0 && val[0] !== '' &&
+          val.filter(x => !!x && x !== '').length > 0;
+      }
+
+      return com.Values && com.Values.length > 0 && com.Values[0] !== '' &&
+        (com.Values.filter(v => !!v && v !== '').length === com.Values.length);
+    });
+  }
+
+  return values;
+};
+
+export const getReadingTime = (text, hasImage, wpm = 250) => {
+  let words = 0;
+  let start = 0;
+  let end = text.length - 1;
+  let i;
+  const wordsPerMinute = wpm;
+
+  const wordBound = (c) => {
+    return (
+      (' ' === c) ||
+      ('\n' === c) ||
+      ('\r' === c) ||
+      ('\t' === c)
+    );
+  };
+
+  // fetch bounds
+  while (wordBound(text[start])) {
+    start++;
+  }
+
+  while (wordBound(text[end])) {
+    end--;
+  }
+
+  // calculate the number of words
+  for (i = start; i <= end;) {
+    for (; i <= end && !wordBound(text[i]); i++) { }
+    words++;
+    for (; i <= end && wordBound(text[i]); i++) { }
+  }
+
+  // reading time stats
+  const minutes = (words / wordsPerMinute);
+  const extra = hasImage ? 12 : 0;
+  const time = minutes * 60 * 1000 + extra;
+  const minutesToDisplay = Math.ceil(minutes);
+
+  return {
+    minutesToDisplay,
+    minutes: minutes,
+    time: time,
+    words: words,
+  };
+};
+
+export const getStrippedText = string => {
+  const regex = /(<([^>]+)>)/ig;
+
+  return string.replace(regex, '');
+};
+
+export const elementIsFullyVisible = element => {
+  const bounding = element.getBoundingClientRect();
+
+  return (
+    bounding.top >= 0 &&
+    bounding.left >= 0 &&
+    bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+};
+
+export const shouldDisplayMobilePicker = () => (
+  (window.innerHeight || document.documentElement.clientHeight) < 540
+);

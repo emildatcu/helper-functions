@@ -1,0 +1,141 @@
+import { AbstractControl, ValidatorFn } from '@angular/forms';
+import * as libphonenumber from 'google-libphonenumber/dist/libphonenumber';
+import * as moment from 'moment';
+import { VALIDATIONS, UPLOAD_FILE_TYPE } from './constants';
+import {
+  containsOnlyWhitespaces,
+  containsSpecialCharacters,
+  isPhoneNumber
+} from './functions';
+
+export const validatePhoneNumber = (control: AbstractControl) => {
+  if (control.value && !isPhoneNumber(control.value)) {
+    return { invalidPhoneNumber: true };
+  }
+
+  return null;
+};
+
+export const validateName = (control: AbstractControl) => {
+  if (containsSpecialCharacters(control.value) || containsOnlyWhitespaces(control.value)) {
+    return { invalidName: true };
+  }
+
+  return null;
+};
+
+export const validateFileType = (fileExtensions: string = UPLOAD_FILE_TYPE.DOCUMENTS) => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    const extensions = fileExtensions.split('.').join('').split(', ');
+
+    if (control.value) {
+      const type = control.value.type.split('/');
+      const nameExt = control.value.name.split('.');
+
+      return extensions.includes(type[1]) || extensions.includes(nameExt[1]) ?
+        null :
+        {
+          invalidExtension: true,
+          validExtensions: fileExtensions
+        };
+    }
+
+    return null;
+  };
+};
+
+export const hasValidDateFormat = (date: moment.Moment, dateFormats: Array<string>) => {
+  if (typeof date['_i'] === 'string') {
+    return !!dateFormats.find(format => {
+      return date.format(format) === date['_i'] || date['_isValid'];
+    });
+  }
+
+  return true;
+};
+
+export const dateFormat = (dateFormats: Array<string> = VALIDATIONS.DATE_FORMATS): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value || typeof control.value === 'string' || (
+      moment.isMoment(control.value) &&
+      hasValidDateFormat(control.value, dateFormats)
+    )) {
+      return null;
+    }
+
+    return { dateFormat: true };
+  };
+};
+
+export const maxMoment = (dateLimit: Date, dateFormats: Array<string> = VALIDATIONS.DATE_FORMATS): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value || !!dateFormat(dateFormats)(control) || !moment.isMoment(control.value)) {
+      return null;
+    }
+
+    const isValid = control.value.valueOf() < dateLimit.getTime();
+
+    return isValid ? null : { 'maxMoment': { value: control.value.toDate() } };
+  };
+};
+
+export const minMoment = (dateLimit: Date, dateFormats: Array<string> = VALIDATIONS.DATE_FORMATS): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value || !!dateFormat(dateFormats)(control) || !moment.isMoment(control.value)) {
+      return null;
+    }
+
+    const isValid = control.value.valueOf() > dateLimit.getTime();
+
+    return isValid ? null : { 'minMoment': { value: control.value.toDate() } };
+  };
+};
+
+export const emailValidation = (): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value) {
+      return null;
+    }
+
+    const emailRegex = /^[_a-zA-Z0-9-']+(\.[_a-zA-Z0-9-']+)*(\+[\._a-zA-Z0-9-']+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$/;
+    const isValid = emailRegex.test(control.value);
+
+    return isValid ? null : { 'emailValidation': { value: control.value } };
+  };
+};
+
+export const phoneValidation = (): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value) {
+      return null;
+    }
+
+    const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+
+    try {
+      const phone = phoneUtil.parse(control.value);
+      const isValid = phoneUtil.isValidNumber(phone);
+
+      return isValid ? null : { 'phoneValidation': { value: control.value } };
+    } catch (err) {
+      return { 'phoneValidation': { value: control.value } };
+    }
+  };
+};
+
+export const formattedNumberMaxLengthValidation = (maxLength): ValidatorFn => {
+  return (control: AbstractControl): { [key: string]: any } => {
+    if (!control.value) {
+      return null;
+    }
+
+    try {
+      const cleanedNumber = control.value.toString().replace(/\D+/g, '');
+      const isValid = cleanedNumber.length <= maxLength;
+
+      return isValid ? null : { 'formattedNumberMaxLengthValidation': { value: control.value } };
+    } catch (err) {
+      return { 'formattedNumberMaxLengthValidation': { value: control.value } };
+    }
+  };
+};

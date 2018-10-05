@@ -1,0 +1,19 @@
+import { Directive, HostListener } from '@angular/core';
+
+@Directive({
+    selector: '[appScrollIntoViewOnFocus]'
+})
+export class ScrollIntoViewOnFocusDirective {
+
+    constructor() { }
+
+    @HostListener('focus', ['$event'])
+    onFocus(event) {
+        if (event.target.closest('.modal')) {
+            event.target.scrollIntoView();
+        } else {
+            // TODO: make this to work with fixed header
+        }
+    }
+
+}

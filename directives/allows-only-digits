@@ -1,0 +1,46 @@
+import { Directive, HostListener } from '@angular/core';
+import { getCommaSeparatedValue } from '../functions';
+
+@Directive({
+    selector: '[appAllowsOnlyDigits]'
+})
+export class AllowsOnlyDigitsDirective {
+
+    constructor() { }
+
+    @HostListener('keydown', ['$event'])
+    allowsOnlyDigits(e) {
+        // Allow: backspace, delete, tab, escape and enter
+        if ([46, 8, 9, 27, 13].includes(e.keyCode) ||
+            // Allow: Ctrl+A|X|C|V, Command+A|X|C|V
+            ([65, 88, 67, 86].includes(e.keyCode) && (e.ctrlKey === true || e.metaKey === true)) ||
+            // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+            // let it happen, don't do anything
+            return;
+        }
+
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    }
+
+    @HostListener('focus', ['$event'])
+    resetFormat(e) {
+        const value = e.target.value;
+
+        if (value) {
+            e.target.value = value.split(',').join('');
+        }
+    }
+
+    @HostListener('blur', ['$event'])
+    format(e) {
+        const value = e.target.value;
+
+        if (value) {
+            e.target.value = getCommaSeparatedValue(value);
+        }
+    }
+}

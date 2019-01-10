@@ -26,18 +26,61 @@ export const capitalizeFirstLetter = string => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+/**
+ * Returns the text which is before a specified character(first instance of the character)
+ *
+ *   > getStringBeforeChar('https://github.com/datcuemil/helper-functions', '/');
+ *   < "https:"
+ *
+ * @param {string} str
+ * @param {string} char
+ * @return {string}
+ */
 export const getStringBeforeChar = (str, char) => {
   return str.substring(0, str.indexOf(char));
 };
 
+/**
+ * Returns the text which is after a specified character(last instance of the character)
+ *
+ *   > getStringAfterChar('https://github.com/datcuemil/helper-functions', '/');
+ *   < "helper-functions"
+ *
+ * @param {string} str
+ * @param {string} char
+ * @return {string}
+ */
 export const getStringAfterChar = (str, char) => {
   return str.split(char).pop();
 };
 
+/**
+ * Coverts a string to a camelCase string and returns it
+ *
+ *   > getCamelCaseText('background-color');
+ *   < "backgroundColor"
+ *
+ * @param {string} str
+ * @return {string}
+ */
 export const getCamelCaseText = str => {
+  if (!str) {
+    return '';
+  }
+  
   return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => {
     return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
   }).replace(/\s+/g, '');
+};
+// does the same thing as getCamelCaseText, different regex syntax
+export const camelize = (str: string) => {
+  if (!str) {
+    return '';
+  }
+
+  return str.toLowerCase().replace(/[-_\s]+(.)?/g, (match, chr) => {
+    return chr ? chr.toUpperCase() : '';
+  });
 };
 
 export const generateUniqueId = () => {

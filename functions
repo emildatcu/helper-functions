@@ -19,15 +19,25 @@ export const isPhoneNumber = str => {
 export const containsOnlyWhitespaces = str => {
   const regexStr = `\\s{${str.length}}`;
   const regex = new RegExp(regexStr, 'g');
+  
   return regex.test(str);
 };
 
-export const capitalizeFirstLetter = string => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
+/**
+ * Returns the Capitalized text
+ *
+ *   > capitalizeFirstLetter('some text');
+ *   < "Some text"
+ *
+ * @param {string} str
+ * @return {string}
+ */
+export const capitalizeFirstLetter = str => (
+  str.charAt(0).toUpperCase() + str.toLowerCase().slice(1);
+);
 
 /**
- * Returns the text which is before a specified character(first instance of the character)
+ * Returns the text which is before a specified character(s) - (first instance of the character)
  *
  *   > getStringBeforeChar('https://github.com/datcuemil/helper-functions', '/');
  *   < "https:"
@@ -41,9 +51,9 @@ export const getStringBeforeChar = (str, char) => {
 };
 
 /**
- * Returns the text which is after a specified character(last instance of the character)
+ * Returns the text which is after a specified character(s) - (last instance of the character(s))
  *
- *   > getStringAfterChar('https://github.com/datcuemil/helper-functions', '/');
+ *   > getStringAfterChar('https://github.com/datcuemil/helper-functions', 'datcuemil/');
  *   < "helper-functions"
  *
  * @param {string} str
@@ -83,10 +93,27 @@ export const camelize = (str: string) => {
   });
 };
 
-export const generateUniqueId = () => {
-  return `${Math.random().toString(36).substr(2, 10)}`;
-};
+/**
+ * Generates an unique 10 characters length string and returns it
+ *
+ *   > generateUniqueId()
+ *   < "xaxiswkvlz"
+ *
+ * @return {string}
+ */
+export const generateUniqueId = () => (
+  `${Math.random().toString(36).substr(2, 12)}`
+);
 
+/**
+ * Creates a hidden iframe with the given URL
+ *
+ *   > createHiddenIframe('https://github.com/datcuemil/helper-functions');
+ *   < 
+ *
+ * @param {string} src
+ * @return void
+ */
 export const createHiddenIframe = src => {
   const iFrame = document.createElement('iframe');
   iFrame.style.display = 'none';
@@ -99,12 +126,23 @@ export const createHiddenIframe = src => {
 
 export const undef = x => typeof x === 'undefined';
 
-export const getAsteriskValue = value => {
-  if (!value) {
+/**
+ * Coverts all the characters withing the given string with * and returns it
+ *
+ * TODO: can be added a second parameter as a replacement value instead of just *
+ *
+ *   > getAsteriskValue('emil');
+ *   < "****"
+ *
+ * @param {string} str
+ * @return {string}
+ */
+export const getAsteriskValue = str => {
+  if (!str) {
     return '';
   }
 
-  return value.toString().replace(/./g, '*');
+  return str.toString().replace(/./g, '*');
 };
 
 export const toUTCString = (currentDate: Date): string => {
@@ -115,7 +153,6 @@ export const toUTCString = (currentDate: Date): string => {
   ].join('-');
 };
 
-export const generateIdUnsafe = () => `temp_${Math.random().toString(36).slice(2)}`;
 export const getMonthString = (date) => {
   const monthIndex = date.getMonth();
   const monthNames = [
@@ -238,84 +275,10 @@ export const replaceStringResourceParameters = (str, ...parameters) => {
   return str;
 };
 
-export const optionsWithDefaults = ({
-  centerX,
-  centerY,
-  startDegrees,
-  endDegrees,
-  thickness,
-  innerRadius,
-  outerRadius,
-}) => {
-  const o = {
-    cx: centerX || 0,
-    cy: centerY || 0,
-    startRadians: (startDegrees || 0) * Math.PI / 180,
-    closeRadians: (endDegrees || 0) * Math.PI / 180,
-  };
-
-  const t = thickness !== undefined ? thickness : 100;
-
-  let r1, r2;
-
-  if (innerRadius !== undefined) {
-    r1 = innerRadius;
-  } else if (outerRadius !== undefined) {
-    r1 = outerRadius - t;
-  } else {
-    r1 = 200 - t;
-  }
-
-  if (outerRadius !== undefined) {
-    r2 = outerRadius;
-  } else {
-    r2 = r1 + t;
-  }
-
-  if (r1 < 0) {
-    r1 = 0;
-  }
-
-  if (r2 < 0) {
-    r2 = 0;
-  }
-
-  return {
-    ...o,
-    r1,
-    r2,
-  };
-};
-
-export const annularSector = (options) => {
-  const opts = optionsWithDefaults(options);
-  const p = [
-    [opts.cx + opts.r2 * Math.cos(opts.startRadians),
-      opts.cy + opts.r2 * Math.sin(opts.startRadians)],
-    [opts.cx + opts.r2 * Math.cos(opts.closeRadians),
-      opts.cy + opts.r2 * Math.sin(opts.closeRadians)],
-    [opts.cx + opts.r1 * Math.cos(opts.closeRadians),
-      opts.cy + opts.r1 * Math.sin(opts.closeRadians)],
-    [opts.cx + opts.r1 * Math.cos(opts.startRadians),
-      opts.cy + opts.r1 * Math.sin(opts.startRadians)],
-  ];
-
-  const angleDiff = opts.closeRadians - opts.startRadians;
-  const largeArc = (angleDiff % (Math.PI * 2)) > Math.PI ? 1 : 0;
-
-  const cmds = [
-    'M' + p[0].join(),
-    'A' + [opts.r2, opts.r2, 0, largeArc, 1, p[1]].join(),
-    'L' + p[2].join(),
-    'A' + [opts.r1, opts.r1, 0, largeArc, 0, p[3]].join(),
-    'z'
-  ];
-
-  return cmds.join(' ');
-};
 /**
  * Adds delay/debounceTime to a function and it's used before the function
  * like this -> @debounce()
+ *              myFunction() {...}
  * @param delay: number
  */
 export function debounce (delay: number = 300): MethodDecorator {
@@ -385,142 +348,6 @@ export const removeNode = (node: Node) => {
   }
 };
 
-export function sliceContentToFit(
-  { classes = <any>[], styles = <any>{}, lineHeight },
-  postBody,
-  readMoreExpand,
-  POST_MAX_TEXT_LINES,
-  previousPostBody = null,
-  removeWords = false
-) {
-  const container = document.createElement('div');
-
-  Object.keys(styles).forEach(k => {
-    container.style[k] = styles[k];
-  });
-
-  container.style.visibility = 'hidden';
-  container.setAttribute('class', classes.join(' '));
-  container.innerHTML = postBody;
-  document.body.appendChild(container);
-
-  const containerClientRect = container.getBoundingClientRect();
-  const numberOfLines = Math.ceil(containerClientRect.height / lineHeight);
-  const innerHTML = container.innerHTML;
-
-  if (previousPostBody && previousPostBody === innerHTML) {
-    removeNode(container);
-
-    return innerHTML;
-  }
-
-  const seeMoreLink = container.querySelector('.js-see-more');
-  const readMoreLink = container.querySelector('.js-read-more');
-
-  if (seeMoreLink) {
-    removeNode(seeMoreLink);
-  }
-
-  if (readMoreLink) {
-    removeNode(readMoreLink);
-  }
-
-  let innerHTMLWithoutSeeAndReadMore = container.innerHTML.trim();
-
-  if (
-    container.hasChildNodes() &&
-    container.childNodes.length === 1 &&
-    !['#text', 'A', 'BR'].includes(container.childNodes[0]['nodeName'])
-  ) {
-    innerHTMLWithoutSeeAndReadMore = container.childNodes[0]['innerHTML'].trim();
-  }
-
-  removeNode(container);
-
-  if (numberOfLines > POST_MAX_TEXT_LINES) {
-    const anchorString = `<a class="js-see-more read-more tenant-primary-txt-color">${readMoreExpand}</a>`;
-
-    if (!removeWords) {
-      const textWithoutLastSentence = removeTrailingLineBreaks(
-        removeLastSentence(innerHTMLWithoutSeeAndReadMore)
-      );
-
-      if (textWithoutLastSentence) {
-        const textWithAnchor = `${textWithoutLastSentence} ${anchorString}`;
-        return sliceContentToFit(
-          { classes, styles, lineHeight },
-          textWithAnchor,
-          readMoreExpand,
-          POST_MAX_TEXT_LINES,
-          innerHTML
-        );
-      }
-    }
-
-    const textWithoutLastWord = removeTrailingLineBreaks(
-      removeLastWord(innerHTMLWithoutSeeAndReadMore)
-    );
-
-    if (textWithoutLastWord) {
-      const textWithAnchor = `${textWithoutLastWord} ${anchorString}`;
-      return sliceContentToFit(
-        { classes, styles, lineHeight },
-        textWithAnchor,
-        readMoreExpand,
-        POST_MAX_TEXT_LINES,
-        innerHTML,
-        true
-      );
-    }
-  }
-
-  return innerHTML;
-}
-
-export const postHasReadMoreLinkInContent = (postEntity) => {
-  return !postEntity.ActionName || !postEntity.ReadMoreLink;
-};
-
-export const sliceText = (
-  postEntity,
-  fontSize,
-  lineHeight,
-  containerWidth,
-  readMoreExpand,
-  readMoreLink,
-  POST_MAX_TEXT_LINES
-) => {
-  if (!postEntity || !postEntity.Body) {
-    return '';
-  }
-
-  const postBody = postEntity.Body.replace(/<[^\/>][^>]*><\/[^>]+>/, '');
-  const anchor = `<a href="${postEntity.ReadMoreLink}"
-        class="js-read-more read-more tenant-primary-txt-color">${readMoreLink}</a>`;
-  const postBodyWithAnchor = `${postBody} ${anchor}`;
-
-  try {
-    return sliceContentToFit(
-      {
-        styles: {
-          fontSize: `${fontSize}px`,
-          lineHeight: `${lineHeight}px`,
-          width: `${containerWidth}px`,
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-        },
-        lineHeight,
-      },
-      postHasReadMoreLinkInContent(postEntity) && postEntity.ReadMoreLink
-        ? postBodyWithAnchor : postBody,
-      readMoreExpand,
-      POST_MAX_TEXT_LINES
-    );
-  } catch (e) {
-    return postBody;
-  }
-};
-
 export const transformElement = (element, transform, { x = '0px', y = '0px' } = {}) => {
   Object.assign(element.style, {
     mozTransform: transform,
@@ -581,6 +408,9 @@ export const compare = (a, b, isAsc) => {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 };
 
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// Detect browser/device /////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 export const isIOSDevice = () => {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
 };
@@ -702,6 +532,7 @@ export const elementIsFullyVisible = element => {
   );
 };
 
-export const shouldDisplayMobilePicker = () => (
-  (window.innerHeight || document.documentElement.clientHeight) < 540
+
+export const shouldDisplayElement = pixels => (
+  (window.innerHeight || document.documentElement.clientHeight) < pixels
 );

@@ -106,6 +106,53 @@ export const generateUniqueId = () => (
 );
 
 /**
+ * Returns true if the difference between the given time/date and current date is lower than the buffer(minutes)
+ *
+ *   > isExpired('2000-02-21', 100);
+ *   < true
+ *
+ * @param {string} expireTime
+ * @param {number} buffer
+ * @return {boolean}
+ */
+export const isExpired = (expireTime: string, buffer: number = 15) => (
+  moment(expireTime).diff(moment(), 'minutes') < buffer
+);
+
+/**
+ * Returns the percentage in string format given a value and an amount from which that value is
+ *
+ *   > getPercentage(20, 100);
+ *   < '20%'
+ *
+ * @param {number} expireTime
+ * @param {number} buffer
+ * @return {string}
+ */
+export const getPercentage = (value: number, outOf: number) => (
+  `${((value * 100) / outOf).toString()}%`
+);
+
+/**
+ * Returns the given array with unique values inside (removes duplicates)
+ *
+ *   > getUniqValues([[1, 2, 3], [2, 3, 4], [1, 2, 3]]);
+ *   < [[1, 2, 3], [2, 3, 4]]
+ *
+ * @param {array} arr
+ * @return {array}
+ */
+export const getUniqValues = (arr: any[]) => {
+  const seen = {};
+
+  return arr.filter((item) => {
+      const k = JSON.stringify(item);
+
+      return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+  });
+};
+
+/**
  * Creates a hidden iframe with the given URL
  *
  *   > createHiddenIframe('https://github.com/datcuemil/helper-functions');
